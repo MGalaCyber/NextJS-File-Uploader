@@ -47,6 +47,9 @@ export async function POST(request: NextRequest) {
     const isImage = file.type.startsWith("image/")
     const isVideo = file.type.startsWith("video/")
     const isMedia = isImage || isVideo
+    const host = request.headers.get("host");
+    const protocol = request.nextUrl.protocol;
+    const origin = `${protocol}//${host}`;
 
     const response = {
       success: true,
@@ -56,7 +59,7 @@ export async function POST(request: NextRequest) {
         size: file.size,
         type: file.type,
         url: publicUrl, // Supabase public URL
-        previewUrl: `/api/file/${fileName}`, // Local preview URL
+        previewUrl: `${origin}/api/file/${fileName}`, // Local preview URL
         fileName: fileName,
         isMedia,
         isImage,
