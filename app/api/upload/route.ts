@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { supabase } from "@/lib/supabase"
+import { Config } from "@/config"
 
 export async function POST(request: NextRequest) {
   // Set CORS headers
@@ -15,33 +16,33 @@ export async function POST(request: NextRequest) {
     const file = formData.get("file") as File
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400, headers })
+      return NextResponse.json({ success: false, error: "No file provided" }, { status: 400, headers })
     }
 
     // Check file size (50MB limit)
-    if (file.size > 50 * 1024 * 1024) {
-      return NextResponse.json({ error: "File size exceeds 50MB limit" }, { status: 400, headers })
+    if (file.size > Config.MaxFileSize) {
+      return NextResponse.json({ success: false, error: `File size exceeds ${(Config.MaxFileSize / 1024 / 1024).toFixed(1)}MB limit`, }, { status: 400, headers })
     }
 
     const now = Date.now()
-    const expireInMs = 7 * 24 * 60 * 60 * 1000 // 1 minggu
+    const expireInMs = Config.ExpireInMs
     const expireAt = now + expireInMs
 
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_")
     const fileName = `${now}-${expireAt}-${sanitizedName}`
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage.from(process.env.BUCKET_NAME as string).upload(fileName, file)
+    const { data, error } = await supabase.storage.from(Config.BucketName as string).upload(fileName, file)
 
     if (error) {
       console.error("Upload error:", error)
-      return NextResponse.json({ error: "Upload failed: " + error.message }, { status: 500, headers })
+      return NextResponse.json({ success: false, error: "Upload failed: " + error.message }, { status: 500, headers })
     }
 
     // Get public URL
     const {
       data: { publicUrl },
-    } = supabase.storage.from(process.env.BUCKET_NAME as string).getPublicUrl(fileName)
+    } = supabase.storage.from(Config.BucketName as string).getPublicUrl(fileName)
 
     // Determine file type for preview
     const isImage = file.type.startsWith("image/")
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     const isMedia = isImage || isVideo
     const host = request.headers.get("host");
     const protocol = request.nextUrl.protocol;
-    const origin = `${protocol}//${host}`;
+    const origin = host ? `${protocol}//${host}` : Config.BaseUrl;
 
     const response = {
       success: true,
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
         size: file.size,
         type: file.type,
         url: publicUrl, // Supabase public URL
-        previewUrl: `${origin}/api/file/${fileName}`, // Local preview URL
+        previewUrl: `${Config.CdnUrl || origin}/file/${fileName}`, // Local preview URL
         fileName: fileName,
         isMedia,
         isImage,
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("API error:", error)
     return NextResponse.json(
-      { error: "Internal server error: " + (error instanceof Error ? error.message : "Unknown error") },
+      { success: false, error: "Internal server error: " + (error instanceof Error ? error.message : "Unknown error") },
       { status: 500, headers },
     )
   }

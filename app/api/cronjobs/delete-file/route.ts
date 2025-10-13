@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
 import { supabase } from "@/lib/supabase"
+import { Config } from "@/config"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(request: NextRequest) {
   try {
     // Get a list of files from the "temp-files" bucket
-    const { data: files, error: listError } = await supabase.storage.from(process.env.BUCKET_NAME as string).list("", {
+    const { data: files, error: listError } = await supabase.storage.from(Config.BucketName as string).list("", {
       limit: 1000, //maximum files for one call
       offset: 0,
     })
 
     if (listError) {
       console.error("Error listing files:", listError)
-      return NextResponse.json({ error: "Failed to list files" }, { status: 500 })
+      return NextResponse.json({ success: false, error: "Failed to list files" }, { status: 500 })
     }
 
     const now = Date.now()
@@ -37,12 +38,12 @@ export async function GET(request: NextRequest) {
     // Delete all expired files
     if (expiredFiles.length > 0) {
       const { data: deleted, error: deleteError } = await supabase.storage
-        .from(process.env.BUCKET_NAME as string)
+        .from(Config.BucketName as string)
         .remove(expiredFiles)
 
       if (deleteError) {
         console.error("Error deleting files:", deleteError)
-        return NextResponse.json({ error: "Failed to delete some files" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Failed to delete some files" }, { status: 500 })
       }
 
       return NextResponse.json({
@@ -58,6 +59,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (err) {
     console.error("Unexpected error in cronjob:", err)
-    return NextResponse.json({ error: "Unexpected server error" }, { status: 500 })
+    return NextResponse.json({ success: false, error: "Unexpected server error" }, { status: 500 })
   }
 }

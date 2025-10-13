@@ -12,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={" nkcgjv idc0_350 civvmvnnnt"}>
-      <body>{children}</body>
+    <html lang="en" className={"dark royutz idc0_350"} style={{ colorScheme: "dark" }} suppressHydrationWarning>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   )
 }

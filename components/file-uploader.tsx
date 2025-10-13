@@ -7,6 +7,7 @@ import { Upload, File, X, CheckCircle, AlertCircle, Download, ImageIcon, Video, 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Card, CardContent } from "@/components/ui/card"
+import { Config } from "@/config"
 
 interface UploadedFile {
   id: string
@@ -237,7 +238,7 @@ export default function FileUploader() {
     if (isPreviewable) {
       // Encode the file name to handle special characters and spaces
       const encodedFileName = encodeURIComponent(file.fileName)
-      return `${window.location.origin}/api/file/${encodedFileName}`
+      return `${Config.CdnUrl || window.location.origin}/file/${encodedFileName}`
     }
     return null
   }
@@ -245,7 +246,7 @@ export default function FileUploader() {
   const getDirectFileUrl = (file: UploadedFile) => {
     // Encode the file name to handle special characters and spaces
     const encodedFileName = encodeURIComponent(file.fileName)
-    return `${window.location.origin}/api/file/${encodedFileName}`
+    return `${Config.CdnUrl || window.location.origin}/file/${encodedFileName}`
   }
 
   const getFileIcon = (file: UploadedFile) => {
@@ -305,7 +306,7 @@ export default function FileUploader() {
 
       <div className="relative z-10 max-w-4xl mx-auto space-y-8">
         {/* Header */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-4 mt-4">
           <h1 className="text-4xl font-bold text-white">File Uploader</h1>
           <p className="text-gray-400 text-lg">Upload your files securely to the cloud</p>
         </div>

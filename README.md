@@ -23,6 +23,8 @@ Create a `.env` file in the root directory and add your Supabase credentials:
 BUCKET_NAME=files
 SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
 SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+BASE_URL=https://domain.com
+CDN_URL=https://cdn.domain.com
 ```
 
 🔍 How to get these values:

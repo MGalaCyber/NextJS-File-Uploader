@@ -11,7 +11,7 @@ export async function DELETE(request: NextRequest, params: { path: string }) {
 
     if (error) {
       console.error("Delete error:", error)
-      return NextResponse.json({ error: "Failed to delete file: " + error.message }, { status: 500 })
+      return NextResponse.json({ success: false, error: "Failed to delete file: " + error.message }, { status: 500 })
     }
 
     return NextResponse.json(
@@ -26,7 +26,7 @@ export async function DELETE(request: NextRequest, params: { path: string }) {
   } catch (error) {
     console.error("Delete API error:", error)
     return NextResponse.json(
-      { error: "Internal server error: " + (error instanceof Error ? error.message : "Unknown error") },
+      { success: false, error: "Internal server error: " + (error instanceof Error ? error.message : "Unknown error") },
       { status: 500 },
     )
   }
