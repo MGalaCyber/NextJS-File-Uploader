@@ -5,10 +5,14 @@ function parseFileSize(size: string) {
     const unit = match[2]?.toUpperCase();
 
     switch (unit) {
-        case "KB": return value * 1024;
-        case "MB": return value * 1024 * 1024;
-        case "GB": return value * 1024 * 1024 * 1024;
-        default: return value;
+        case "KB":
+            return value * 1024;
+        case "MB":
+            return value * 1024 * 1024;
+        case "GB":
+            return value * 1024 * 1024 * 1024;
+        default:
+            return value;
     }
 }
 
@@ -19,11 +23,16 @@ function parseExpireTime(expire: string) {
     const unit = match[2]?.toLowerCase();
 
     switch (unit) {
-        case "s": return value * 1000;
-        case "m": return value * 60 * 1000;
-        case "h": return value * 60 * 60 * 1000;
-        case "d": return value * 24 * 60 * 60 * 1000;
-        default: return value;
+        case "s":
+            return value * 1000;
+        case "m":
+            return value * 60 * 1000;
+        case "h":
+            return value * 60 * 60 * 1000;
+        case "d":
+            return value * 24 * 60 * 60 * 1000;
+        default:
+            return value;
     }
 }
 
@@ -37,4 +46,4 @@ export const Config = {
 
     BaseUrl: process.env.BASE_URL || "http://localhost:3000",
     CdnUrl: process.env.CDN_URL?.replace(/\/$/, "") || "", // Optional, if you have a CDN in front of Supabase Storage
-}
+};

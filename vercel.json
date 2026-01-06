@@ -1,8 +1,0 @@
-{
-    "crons": [
-        {
-            "path": "/api/cronjobs/delete-file",
-            "schedule": "0 17 * * *"
-        }
-    ]
-}
